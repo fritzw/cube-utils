@@ -8,5 +8,27 @@ where processing a small file can take several hours.
 
 The cube-encoder in this project is a faster alternative to CodeX, written in plain C.
 
+## Installation
 
+Currently the program is designed only for Linux, but it should also compile on Mac OS X.
+If anyone wants to add support for Windows, you'd be welcome. 
 
+To compile the project on Linux, the following steps should be sufficient (the first one is Ubuntu/Debian-specific):
+```
+sudo apt-get install build-essential
+git clone 'https://github.com/fritzw/cube-utils.git'
+cd cube-utils
+make all
+make test
+```
+
+These commands will install the compiler, download and compile the program, and execute all test cases to verify that it works correctly. After this you will have two files called `cubepro-encoder` and `cubex-encoder`. The first one will encode `.bfb` files into `.cubepro` files and the second one into `.cubex` files. *(In fact both encoders are identical. Only the name makes the difference, so do not rename them).*
+
+## Usage
+
+The synopsis is
+```
+cubepro-encoder inputfile [outputfile]
+cubex-encoder inputfile [outputfile]
+```
+where the outputfile is optional. To encode a `.bfb` file, simply call `cubepro-encoder somefile.bfb` and it will create `somefile.cubepro`. Same for `cubex-encoder`, but with a `.cubex` file extension. If that doesn't suit you, you can specify any output file name you like.
