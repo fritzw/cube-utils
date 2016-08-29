@@ -1,20 +1,34 @@
-#include <string.h>
+/*********************************************************************
+* Filename:   blowfish.c
+* Author:     Brad Conte (brad AT bradconte.com)
+* Copyright:
+* Disclaimer: This code is presented "as is" without any guarantees.
+* Details:    Implementation of the Blowfish encryption algorithm.
+              Modes of operation (such as CBC) are not included.
+              Algorithm specification can be found here:
+               * http://www.schneier.com/blowfish.html
+*********************************************************************/
 
+/*************************** HEADER FILES ***************************/
+#include <stdlib.h>
+#include <memory.h>
 #include "blowfish.h"
 
+/****************************** MACROS ******************************/
 #define F(x,t) t = keystruct->s[0][(x) >> 24]; \
-                   t += keystruct->s[1][((x) >> 16) & 0xff]; \
-t ^= keystruct->s[2][((x) >> 8) & 0xff]; \
-t += keystruct->s[3][(x) & 0xff];
+               t += keystruct->s[1][((x) >> 16) & 0xff]; \
+               t ^= keystruct->s[2][((x) >> 8) & 0xff]; \
+               t += keystruct->s[3][(x) & 0xff];
 #define swap(r,l,t) t = l; l = r; r = t;
 #define ITERATION(l,r,t,pval) l ^= keystruct->p[pval]; F(l,t); r^= t; swap(r,l,t);
 
-static const uint32_t p_perm[18] = {
+/**************************** VARIABLES *****************************/
+static const WORD p_perm[18] = {
     0x243F6A88,0x85A308D3,0x13198A2E,0x03707344,0xA4093822,0x299F31D0,0x082EFA98,0xEC4E6C89,
     0x452821E6,0x38D01377,0xBE5466CF,0x34E90C6C,0xC0AC29B7,0xC97C50DD,0x3F84D5B5,0xB5470917,
     0x9216D5D9,0x8979FB1B
 };
-static const uint32_t s_perm[4][256] = {
+static const WORD s_perm[4][256] = {
     {
         0xD1310BA6,0x98DFB5AC,0x2FFD72DB,0xD01ADFB7,0xB8E1AFED,0x6A267E96,0xBA7C9045,0xF12C7F99,
         0x24A19947,0xB3916CF7,0x0801F2E2,0x858EFC16,0x636920D8,0x71574E69,0xA458FEA3,0xF4933D7E,
@@ -153,9 +167,10 @@ static const uint32_t s_perm[4][256] = {
     }
 };
 
-void blowfish_encrypt(uint8_t in[], uint8_t out[], BLOWFISH_KEY *keystruct, int compatibility_mode)
+/*********************** FUNCTION DEFINITIONS ***********************/
+void blowfish_encrypt(const BYTE in[], BYTE out[], const BLOWFISH_KEY *keystruct, int compatibility_mode)
 {
-    uint32_t l,r,t;
+    WORD l,r,t; //,i;
 
     // Swap input byte order to conform with broken encoding
     if (compatibility_mode) {
@@ -207,9 +222,9 @@ void blowfish_encrypt(uint8_t in[], uint8_t out[], BLOWFISH_KEY *keystruct, int 
     }
 }
 
-void blowfish_decrypt(uint8_t in[], uint8_t out[], BLOWFISH_KEY *keystruct, int compatibility_mode)
+void blowfish_decrypt(const BYTE in[], BYTE out[], const BLOWFISH_KEY *keystruct, int compatibility_mode)
 {
-    uint32_t l,r,t;
+    WORD l,r,t; //,i;
 
     if (compatibility_mode) {
         // Swap input byte order to conform with broken encoding
@@ -261,20 +276,21 @@ void blowfish_decrypt(uint8_t in[], uint8_t out[], BLOWFISH_KEY *keystruct, int 
     }
 }
 
-void blowfish_key_schedule(uint8_t user_key[], BLOWFISH_KEY *keystruct, int len)
+void blowfish_key_setup(const BYTE user_key[], BLOWFISH_KEY *keystruct, size_t len)
 {
-    uint8_t block[8]={0x00};
+    BYTE block[8];
     int idx,idx2;
 
     // Copy over the constant init array vals (so the originals aren't destroyed).
-    memcpy(keystruct->p,p_perm,sizeof(uint32_t) * 18);
-    memcpy(keystruct->s,s_perm,sizeof(uint32_t) * 1024);
+    memcpy(keystruct->p,p_perm,sizeof(WORD) * 18);
+    memcpy(keystruct->s,s_perm,sizeof(WORD) * 1024);
 
     // Combine the key with the P box. Assume key is standard 448 bits (56 bytes) or less.
     for (idx = 0, idx2 = 0; idx < 18; ++idx, idx2 += 4)
         keystruct->p[idx] ^= (user_key[idx2 % len] << 24) | (user_key[(idx2+1) % len] << 16)
             | (user_key[(idx2+2) % len] << 8) | (user_key[(idx2+3) % len]);
     // Re-calculate the P box.
+    memset(block, 0, 8);
     for (idx = 0; idx < 18; idx += 2) {
         blowfish_encrypt(block,block,keystruct, 0);
         keystruct->p[idx] = (block[0] << 24) | (block[1] << 16) | (block[2] << 8) | block[3];

@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
         return 3;
     }
     size_t outfilesize = ((infilesize + 8) / 8) * 8;
-    uint8_t *data = malloc(outfilesize);
+    BYTE *data = malloc(outfilesize);
     if (data == NULL) {
         perror("Unable to allocate memory for input file");
         return 4;
@@ -58,13 +58,13 @@ int main(int argc, char **argv) {
     fclose(infile);
 
     // Pad input data
-    uint8_t pad = outfilesize - infilesize;
+    BYTE pad = outfilesize - infilesize;
     for (i = infilesize; i < outfilesize; i++) {
         data[i] = pad;
     }
 
     // Encrypt data
-    blowfish_key_schedule((uint8_t*) userkey, &key, strlen(userkey));
+    blowfish_key_setup((BYTE*) userkey, &key, strlen(userkey));
     for (i = 0; i < outfilesize; i += 8) {
         blowfish_encrypt(&data[i], &data[i], &key, 1);
     }
