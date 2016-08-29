@@ -1,3 +1,4 @@
 *.o
-tests/*.result
-cube-encoder
+tests/*.result*
+cubepro-encoder
+cubex-encoder

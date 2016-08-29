@@ -20,17 +20,48 @@ int main(int argc, char **argv) {
     char cubepro_key[] = "221BBakerMycroft";
     char cubex_key[] = "kWd$qG*25Xmgf-Sg";
     char *userkey = cubepro_key;
+    char *extension = ".cubepro";
     BLOWFISH_KEY key;
     char *infilename, *outfilename;
     int i;
 
+    /* TODO:
+    Implement flag to enable CubeX encoding?
+    Implement decoding of .cubepro/.cubex files?
+    Implement legacy mode for compatibility with CodeX:
+    argv[0] [CUBEPRO | CUBEX] [ENCODE | DECODE | RECODE] inputfile outputfile
+    */
+    
+    if (strncmp(argv[0] + strlen(argv[0]) - 13, "cubex-encoder", 13) == 0) {
+        userkey = cubex_key;
+        extension = ".cubex";
+    }
+
     // "Parse" arguments
-    if (argc != 3) {
-        printf("Usage: %s inputfile outputfile\n", argv[0]);
+    if (argc == 2) {
+        infilename = argv[1];
+        size_t inlength = strlen(infilename);
+        outfilename = malloc(inlength + 10);
+        if (outfilename == NULL) {
+            perror("Unable to allocate memory for output file name");
+            return 4;
+        }
+        strncpy(outfilename, infilename, inlength);
+        if (strncmp(outfilename + inlength - 4, ".bfb", 4) == 0) {
+            strcpy(outfilename + inlength - 4, extension);
+        } else {
+            strcpy(outfilename + inlength, extension);
+        }
+    } else if (argc == 3) {
+        infilename = argv[1];
+        outfilename = argv[2];
+    } else {
+        printf("Usage:\n"
+               "    %s inputfile [outputfile]\n"
+               "    Default outputfile is inputfile minus the .bfb extension plus %s\n",
+               argv[0], extension);
         return 1;
     }
-    infilename = argv[1];
-    outfilename = argv[2];
 
 
     // Load input file

@@ -1,6 +1,6 @@
 MAKEFLAGS += --quiet
 
-TARGET = cube-encoder
+TARGETS = cubepro-encoder cubex-encoder
 LIBS = -lm
 CC = gcc
 CFLAGS += -g -Wall
@@ -9,30 +9,37 @@ OBJECTS = $(patsubst %.c, %.o, $(wildcard *.c))
 HEADERS = $(wildcard *.h)
 
 TESTFILES = $(wildcard tests/*.bfb)
-TESTOUTPUTS = $(patsubst %.bfb, %.result, $(TESTFILES))
+TESTOUTPUTS = $(patsubst %.bfb, %.resultpro, $(TESTFILES)) $(patsubst %.bfb, %.resultx, $(TESTFILES))
 
 .PHONY: default all clean test
 
-all: $(TARGET)
+all: $(TARGETS)
 
 %.o: %.c $(HEADERS)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-.PRECIOUS: $(TARGET) $(OBJECTS)
+.PRECIOUS: $(TARGETS) $(OBJECTS)
 
-$(TARGET): $(OBJECTS)
+cubepro-encoder: $(OBJECTS)
 	$(CC) $(OBJECTS) -Wall $(LIBS) -o $@
 
-%.result: %.bfb $(TARGET)
-	./$(TARGET) $< $(patsubst %.bfb, %.result, $<)
-	diff $(patsubst %.bfb, %.cubepro, $<) $(patsubst %.bfb, %.result, $<)
+cubex-encoder: cubepro-encoder
+	cp $^ $@
 
-test: test_clean $(TARGET) $(TESTOUTPUTS)
+%.resultpro: %.bfb cubepro-encoder
+	./cubepro-encoder $< $(patsubst %.bfb, %.resultpro, $<)
+	diff $(patsubst %.bfb, %.cubepro, $<) $(patsubst %.bfb, %.resultpro, $<)
+
+%.resultx: %.bfb cubex-encoder
+	./cubex-encoder $< $(patsubst %.bfb, %.resultx, $<)
+	diff $(patsubst %.bfb, %.cubex, $<) $(patsubst %.bfb, %.resultx, $<)
+
+test: test_clean $(TARGETS) $(TESTOUTPUTS)
 	echo "All tests completed successfully"
 
 test_clean:
-	-rm -f tests/*.result
+	-rm -f tests/*.resultpro tests/*.resultx
 
 clean: test_clean
 	-rm -f *.o
-	-rm -f $(TARGET)
+	-rm -f $(TARGETS)
