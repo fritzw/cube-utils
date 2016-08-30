@@ -2,3 +2,4 @@
 tests/*.result*
 cubepro-encoder
 cubex-encoder
+cube-decoder
