@@ -6,7 +6,10 @@ files for the CubePro and CubeX lines of 3D-printers.
 However, CodeX is quite slow, especially when run on Linux or OSX using wine,
 where processing a small file can take several hours.
 
-The cube-encoder in this project is a faster alternative to CodeX, written in plain C.
+The cube-encoder in this project is a faster alternative to CodeX, written in plain C. Here's a quick comparison on two comparable processors:
+
+* 11 MB file with CodeX64.exe on Windows on a 2.4 GHz Xeon E5620: 8 minutes and 14 seconds
+* 11 MB file with cubepro-encoder on Linux on a 2.1 GHz Opteron 6172: 1.2 seconds
 
 ## Installation
 
