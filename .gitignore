@@ -1,5 +1,7 @@
 *.o
 tests/*.result*
-cubepro-encoder
-cubex-encoder
-cube-decoder
+Debug
+Release
+.suo
+*.VC.db
+*.VC.VC.opendb

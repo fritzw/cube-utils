@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <ctype.h>
 
 #include "blowfish.h"
 
@@ -15,6 +16,15 @@ long int fsize(FILE *f) {
     return size;
 }
 
+int ends_with(char *subject, char *ending) {
+	int subjectlength = strlen(subject);
+	int endlength = strlen(ending);
+	if (endlength > subjectlength) {
+		return 0;
+	}
+	return 0 == strncmp(subject + subjectlength - endlength, ending, endlength);
+}
+
 
 int main(int argc, char **argv) {
     char cubepro_key[] = "221BBakerMycroft";
@@ -24,15 +34,22 @@ int main(int argc, char **argv) {
     BLOWFISH_KEY key;
     char *infilename, *outfilename;
     int i;
+	char *executable;
 
     /* TODO:
+	This whole code is a mess that was hacked together quickly. Clean it up!
     Implement flag to enable CubeX encoding?
     Implement decoding of .cubepro/.cubex files?
     Implement legacy mode for compatibility with CodeX:
     argv[0] [CUBEPRO | CUBEX] [ENCODE | DECODE | RECODE] inputfile outputfile
     */
     
-    if (strncmp(argv[0] + strlen(argv[0]) - 13, "cubex-encoder", 13) == 0) {
+	for (executable = argv[0]; *executable; ++executable) {
+		*executable = tolower(*executable);
+	}
+	executable = argv[0];
+    if (ends_with(executable, "cubex-encoder") ||
+		ends_with(executable, "cubex-encoder.exe")) {
         userkey = cubex_key;
         extension = ".cubex";
     }
@@ -65,7 +82,7 @@ int main(int argc, char **argv) {
 
 
     // Load input file
-    FILE *infile = fopen(infilename, "r");
+    FILE *infile = fopen(infilename, "rb");
     if (infile == NULL) {
         perror("Unable to open input file");
         return 2;
@@ -102,7 +119,7 @@ int main(int argc, char **argv) {
 
 
     // Save data to output file
-    FILE *outfile = fopen(outfilename, "w+");
+    FILE *outfile = fopen(outfilename, "wb+");
     if (outfile == NULL) {
         perror("Unable to open output file");
         return 6;
