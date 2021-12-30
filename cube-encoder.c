@@ -55,6 +55,9 @@ int main(int argc, char **argv) {
     } else if (ends_with(executable, "cube3-encoder") ||
 		ends_with(executable, "cube3-encoder.exe")) {
         extension = ".cube3";
+    } else if (ends_with(executable, "cube-encoder") ||
+		ends_with(executable, "cube-encoder.exe")) {
+        extension = ".cube";
     }
 
     // "Parse" arguments
