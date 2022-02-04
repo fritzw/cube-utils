@@ -23,7 +23,8 @@ make test
 ```
 
 These commands will download and compile the program and execute all test cases to verify that it works correctly.
-After this you will have three files called `cubepro-encoder`, `cube3-encoder` and `cubex-encoder`.
+After this you will have four files called `cube-encoder`, `cubepro-encoder`, `cube3-encoder` and `cubex-encoder`.
+`cube-encoder` will encode `.bfb` files into `.cube` files.
 `cubepro-encoder` will encode `.bfb` files into `.cubepro` files.
 `cube3-encoder` will encode `.bfb` files into `.cube3` files.
 `cubex-encoder` will encode `.bfb` files into `.cubex` files.
@@ -36,15 +37,16 @@ After this you will have three files called `cubepro-encoder`, `cube3-encoder` a
 * Option 1: Just drop the `.bfb` file on the correct encoder program with your mouse.
 * Option 2: Run the encoder form the command line as follows:
 ```
+cube-encoder inputfile [outputfile]
 cubepro-encoder inputfile [outputfile]
 cube3-encoder inputfile [outputfile]
 cubex-encoder inputfile [outputfile]
 ```
 where the outputfile is optional. To encode a `.bfb` file, simply call `cubepro-encoder somefile.bfb` and it will create `somefile.cubepro`.
-Same for `cube3-encoder` (but with a `.cube3` file extension) and `cubex-encoder` (but with a `.cubex` file extension).
+Same for `cube-encoder` (but with a `.cube` file extension), `cube3-encoder` (but with a `.cube3` file extension) and `cubex-encoder` (but with a `.cubex` file extension).
 If that doesn't suit you, you can specify any output file name you like.
 
 To decode an encoded `.cubepro` or `.cubex` file, just drop it on the `cube-decoder` program or run the following command. The file type to decode is automatically determined from the file extension of the input file.
 ```
-cube-decoder inputfile [outputfile]
+cube-decoder inputfile outputfile
 ```

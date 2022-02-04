@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
     } else {
         printf("Usage:\n"
                "    %s [-x] inputfile outputfile\n"
-               "    Normally, the inputfile will be decoded as a .cubepro file.\n"
+               "    Normally, the inputfile will be decoded as a .cube/.cubepro/.cube3 file.\n"
                "    If the file name ends in .cubex or the -x parameter is present,i\n"
                "    it will be decoded as a .cubex file instead.\n",
                argv[0]);

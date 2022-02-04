@@ -1,6 +1,6 @@
 MAKEFLAGS += --quiet
 
-TARGETS = cubepro-encoder cubex-encoder cube3-encoder cube-decoder
+TARGETS = cubepro-encoder cubex-encoder cube3-encoder cube-encoder cube-decoder
 LIBS = -lm
 CC = gcc
 CFLAGS += -g -Wall
@@ -22,13 +22,16 @@ all: $(TARGETS)
 
 .PRECIOUS: $(TARGETS) $(OBJECTS)
 
-cubepro-encoder: cube-encoder.o blowfish.o
+cube-encoder: cube-encoder.o blowfish.o
 	$(CC) $^ -Wall $(LIBS) -o $@
 
-cubex-encoder: cubepro-encoder
+cubex-encoder: cube-encoder
 	cp $^ $@
 
-cube3-encoder: cubepro-encoder
+cube3-encoder: cube-encoder
+	cp $^ $@
+
+cubepro-encoder: cube-encoder
 	cp $^ $@
 
 cube-decoder: cube-decoder.o blowfish.o
